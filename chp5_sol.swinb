@@ -1,0 +1,1826 @@
+<div class="notebook">
+
+<div class="nb-cell html" name="htm5">
+<style>
+  .fake-link {
+    color: royalblue;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .fake-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+
+
+
+
+
+<h2 class="chapterHead">
+<span class="titlemark"> Chapter&nbsp;5 
+</span>
+<br>
+<a id="x32-450005">
+</a> Arithmetic 
+</h2>
+
+
+
+
+<p class="noindent"> This chapter has two main goals: 
+</p>
+
+
+<ol class="enumerate1">
+<li class="enumerate" id="x32-45002x1"> To introduce Prolog’s built-in abilities for performing arithmetic. 
+</li>
+<li class="enumerate" id="x32-45004x2"> To apply them to simple list processing problems, using accumulators. 
+</li>
+</ol>
+
+
+<div class="sectionTOCS"> &nbsp; 
+<span class="sectionToc"> 5.1 
+<span class="fake-link" onclick="document.getElementById('x33-460005.1').scrollIntoView();"> Arithmetic in Prolog 
+</span>
+</span>
+<br> &nbsp; 
+<span class="sectionToc"> 5.2 
+<span class="fake-link" onclick="document.getElementById('x34-470005.2').scrollIntoView();"> A Closer Look 
+</span>
+</span>
+<br> &nbsp; 
+<span class="sectionToc"> 5.3 
+<span class="fake-link" onclick="document.getElementById('x35-480005.3').scrollIntoView();"> Arithmetic and Lists 
+</span>
+</span>
+<br> &nbsp; 
+<span class="sectionToc"> 5.4 
+<span class="fake-link" onclick="document.getElementById('x36-490005.4').scrollIntoView();"> Comparing Integers 
+</span>
+</span>
+<br> &nbsp; 
+<span class="sectionToc"> 5.5 
+<span class="fake-link" onclick="document.getElementById('x37-500005.5').scrollIntoView();"> <strong>Exercise</strong>s 
+</span>
+</span>
+<br> &nbsp; 
+<span class="sectionToc"> 5.6 
+<span class="fake-link" onclick="document.getElementById('x38-510005.6').scrollIntoView();"> Practical Session 
+</span>
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 5.1 
+</span>
+<a id="x33-460005.1">
+</a> Arithmetic in Prolog 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Prolog provides a number of basic arithmetic tools for manipulating integers (that is, numbers of the form ...-3, -2, -1, 0, 1, 2, 3, 4...). Most Prolog implementation also provide tools for handling real numbers (or floating point numbers) such as 1.53 or 6 
+<span class="cmmi-10"> . 
+</span> 35 
+<span class="cmsy-10"> × 
+</span> 10 
+<sup>
+<span class="cmr-7"> 5 
+</span>
+</sup> , but we’re not going to discuss these, for they are not particularly useful for the symbolic processing tasks discussed in this book. Integers, on the other hand, are useful in connection with symbolic tasks (we use them to state the length of lists, for example) so it is important to understand how to work with them. We’ll start by looking at how Prolog handles the four basic operations of addition, multiplication, subtraction, and division. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="center">
+<!--l. 34-->
+<p class="noindent">
+</p>
+<div class="tabular">
+<table cellpadding="0" cellspacing="0" class="tabular" id="TBL-1">
+<colgroup id="TBL-1-1g">
+<col id="TBL-1-1">
+<col id="TBL-1-2">
+</colgroup>
+<tbody><tr id="TBL-1-1-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-1-1-1" style="white-space:nowrap; text-align:left;"> Arithmetic examples 
+</td>
+<td class="td11" id="TBL-1-1-2" style="white-space:nowrap; text-align:left;"> Prolog Notation 
+</td>
+</tr>
+<tr id="TBL-1-2-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-1-2-1" style="white-space:nowrap; text-align:left;"> 6 + 2 = 8 
+</td>
+<td class="td11" id="TBL-1-2-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> 8 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;6+2. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-1-3-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-1-3-1" style="white-space:nowrap; text-align:left;"> 6 
+<span class="cmsy-10"> ∗ 
+</span> 2 = 12 
+</td>
+<td class="td11" id="TBL-1-3-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> 12 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;6*2. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-1-4-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-1-4-1" style="white-space:nowrap; text-align:left;"> 6 
+<span class="cmsy-10"> − 
+</span> 2 = 4 
+</td>
+<td class="td11" id="TBL-1-4-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> 4 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;6-2. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-1-5-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-1-5-1" style="white-space:nowrap; text-align:left;"> 6 
+<span class="cmsy-10"> − 
+</span> 8 = 
+<span class="cmsy-10"> − 
+</span> 2 
+</td>
+<td class="td11" id="TBL-1-5-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> -2 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;6-8. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-1-6-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-1-6-1" style="white-space:nowrap; text-align:left;"> 6 
+<span class="cmsy-10"> ÷ 
+</span> 2 = 3 
+</td>
+<td class="td11" id="TBL-1-6-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> 3 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;6/2. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-1-7-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-1-7-1" style="white-space:nowrap; text-align:left;"> 7 
+<span class="cmsy-10"> ÷ 
+</span> 2 = 3 
+</td>
+<td class="td11" id="TBL-1-7-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> 3 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;7/2. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-1-8-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-1-8-1" style="white-space:nowrap; text-align:left;"> 1 is the remainder when 7 is divided by 2 
+</td>
+<td class="td11" id="TBL-1-8-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> 1 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;mod(7,2). 
+</span>
+</span>
+</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Note that as we are working with integers, division gives us back an integer answer. Thus 7 
+<span class="cmsy-10"> ÷ 
+</span> 2 gives 3 as an answer, leaving remainder 1. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Posing the following queries yields the following responses 
+<a id="dx33-46001">
+</a> : 
+</p>
+</div>
+
+<div class="nb-cell query" name="q4">
+8 is 6+2. 
+</div>
+
+<div class="nb-cell query" name="q3">
+12 is 6*2. 
+</div>
+
+<div class="nb-cell query" name="q2">
+-2 is 6-8. 
+</div>
+
+<div class="nb-cell query" name="q1">
+3 is 6/2. 
+</div>
+
+<div class="nb-cell query" name="fancyvrb230">
+1 is mod(7,2). 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> More importantly, we can work out the answers to arithmetic questions by using variables. For example: 
+</p>
+</div>
+
+<div class="nb-cell query" name="q6">
+X is 6+2. 
+</div>
+
+<div class="nb-cell query" name="q5">
+X is 6*2.
+</div>
+
+<div class="nb-cell query" name="fancyvrb231">
+R is mod(7,2). 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Moreover, we can use arithmetic operations when we define predicates. Here’s a simple example. Let’s define a predicate 
+<span class="verb">
+<span class="cmtt-10"> add_3_and_double/2 
+</span>
+</span> whose arguments are both integers. This predicate takes its first argument, adds three to it, doubles the result, and returns the number obtained as the second argument. We define this predicate as follows: 
+</p>
+</div>
+
+<div class="nb-cell program" name="fancyvrb232">
+add_3_and_double(X,Y) :- Y is (X+3)*2.
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> And indeed, this works: 
+</p>
+</div>
+
+<div class="nb-cell query" name="q7">
+add_3_and_double(1,X). 
+</div>
+
+<div class="nb-cell query" name="fancyvrb233">
+add_3_and_double(2,X). 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> One other thing. Prolog understands the usual conventions we use for disambiguating arithmetical expressions. For example, when we write 3 + 2 
+<span class="cmsy-10"> × 
+</span> 4 we mean 3 + (2 
+<span class="cmsy-10"> × 
+</span> 4) and not (3 + 2) 
+<span class="cmsy-10"> × 
+</span> 4, and Prolog knows this convention: 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb234">
+X is 3+2*4. 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 5.2 
+</span>
+<a id="x34-470005.2">
+</a> A Closer Look 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> That’s the basics, but we need to know more. The most important to grasp is this: +, *, -, 
+<span class="cmsy-10"> ÷ 
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> mod 
+</span>
+</span> do 
+<span class="cmti-10"> not 
+</span> carry out any arithmetic. In fact, expressions such as 
+<span class="verb">
+<span class="cmtt-10"> 3+2 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> 3-2 
+</span>
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> 3*2 
+</span>
+</span> are simply terms. The functors of these terms are 
+<span class="verb">
+<span class="cmtt-10"> + 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> - 
+</span>
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> * 
+</span>
+</span> respectively, and the arguments are 
+<span class="verb">
+<span class="cmtt-10"> 3 
+</span>
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> 2 
+</span>
+</span> . Apart from the fact that the functors go between their arguments (instead of in front of them) these are ordinary Prolog terms, and unless we do something special, Prolog will not actually do any arithmetic. In particular, if we pose the query 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb235">
+X = 3+2
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> we don’t get back the answer 
+<span class="verb">
+<span class="cmtt-10"> X=5 
+</span>
+</span> . Instead we get back 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb236">
+<a id="x34-47004r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;3+2 
+</span>
+<br class="fancyvrb">
+<a id="x34-47006r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;yes 
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> That is, Prolog has simply unified the variable 
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+</span> to the complex term 
+<span class="verb">
+<span class="cmtt-10"> 3+2 
+</span>
+</span> . It has 
+<span class="cmti-10"> not 
+</span> carried out any arithmetic. It has simply done what it usually does when 
+<span class="cmtt-10"> =/2 
+</span> is used: performed unification. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Similarly, if we pose the query 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb237">
+3+2*5 = X
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> we get the response 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb238">
+<a id="x34-47010r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;3+2*5 
+</span>
+<br class="fancyvrb">
+<a id="x34-47012r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;yes 
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Again, Prolog has simply bound the variable 
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+</span> to the complex term 
+<span class="verb">
+<span class="cmtt-10"> 3+2*5 
+</span>
+</span> . It did not evaluate this expression to 13. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> To force Prolog to actually evaluate arithmetic expressions we have to use 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb239">
+<a id="x34-47014r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> just as we did in our earlier examples. In fact, 
+<span class="verb">
+<span class="cmtt-10"> is 
+</span>
+</span> does something very special: it sends a signal to Prolog that says “Hey! Don’t treat this expression as an ordinary complex term! Call up your built-in arithmetic capabilities and carry out the calculations!” 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> In short, 
+<span class="verb">
+<span class="cmtt-10"> is 
+</span>
+</span> forces Prolog to act in an unusual way. Normally Prolog is quite happy just unifying variables to structures: that’s its job, after all. Arithmetic is something extra that has been bolted on to the basic Prolog engine because it is useful. Unsurprisingly, there are some restrictions on this extra ability, and we need to know what they are. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> For a start, the arithmetic expressions to be evaluated must be on the right hand side of 
+<span class="verb">
+<span class="cmtt-10"> is 
+</span>
+</span> . In our earlier examples we carefully posed the query 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb240">
+X is 6+2. 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> which is the right way to do it. If instead we had asked 
+</p>
+</div>
+
+<div class="nb-cell query" name="q8">
+6+2 is X.
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> we would have got a message saying 
+<span class="verb">
+<span class="cmtt-10"> instantiation_error 
+</span>
+</span> , or something similar. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Moreover, although we are free to use variables on the right hand side of 
+<span class="verb">
+<span class="cmtt-10"> is 
+</span>
+</span> , when we actually carry out evaluation, the variable must already have been instantiated to a variable-free arithmetic expression. If the variable is uninstantiated, or if it is instantiated to something other than an integer, we will get some sort of 
+<span class="verb">
+<span class="cmtt-10"> instantiation_error 
+</span>
+</span> message. This is because arithmetic isn’t performed using Prolog’s usual unification and knowledge base search mechanisms: it’s done by calling up a special black box which knows about integer arithmetic. If we hand the black box the wrong kind of data, it’s going to complain. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Here’s an example. Recall our “add 3 and double it” predicate. 
+</p>
+</div>
+
+<div class="nb-cell program" name="fancyvrb242">
+add_3_and_double(X,Y) :- Y is (X+3)*2.
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> When we described this predicate, we carefully said that it added 3 to its first argument, doubled the result, and returned the answer in its second argument. For example, 
+<span class="verb">
+<span class="cmtt-10"> add_3_and_double(3,X) 
+</span>
+</span> returns 
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;12 
+</span>
+</span> . We didn’t say anything about using this predicate in the reverse direction. For example, we might hope that posing the query 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb243">
+add_3_and_double(X,12).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> would return the answer 
+<span class="verb">
+<span class="cmtt-10"> X=3 
+</span>
+</span> . But it doesn’t. Instead we get the 
+<span class="verb">
+<span class="cmtt-10"> instantiation_error 
+</span>
+</span> message. Why? Well, when we pose the query this way round, we are asking Prolog to evaluate 
+<span class="verb">
+<span class="cmtt-10"> 12 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;(X+3)*2 
+</span>
+</span> , which it 
+<span class="cmti-10"> can’t 
+</span> do as 
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+</span> is not instantiated. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Two final remarks. As we’ve already mentioned, for Prolog 
+<span class="verb">
+<span class="cmtt-10"> 3 
+</span>
+<span class="cmtt-10"> &nbsp;+ 
+</span>
+<span class="cmtt-10"> &nbsp;2 
+</span>
+</span> is just a term. In fact, for Prolog, it really 
+<span class="cmti-10"> is 
+</span> the term 
+<span class="cmti-10"> +(3,2) 
+</span> . The expression 
+<span class="verb">
+<span class="cmtt-10"> 3 
+</span>
+<span class="cmtt-10"> &nbsp;+ 
+</span>
+<span class="cmtt-10"> &nbsp;2 
+</span>
+</span> is just a user-friendly notation that’s nicer for us to use. This means that, if you want to, you can give Prolog queries like 
+</p>
+</div>
+
+<div class="nb-cell query" name="q9">
+X is +(3,2)
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> and Prolog will correctly reply 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb245">
+<a id="x34-47030r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;5 
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Actually, you can even given Prolog the query 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb246">
+is(X,+(3,2))
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> and Prolog will respond 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb247">
+<a id="x34-47034r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;5 
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> This is because, for Prolog, the expression 
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;+(3,2) 
+</span>
+</span> really is the term 
+<span class="verb">
+<span class="cmtt-10"> is(X,+(3,2)) 
+</span>
+</span> . The expression 
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;is 
+</span>
+<span class="cmtt-10"> &nbsp;+(3,2) 
+</span>
+</span> is just user-friendly notation. Underneath, as always, Prolog is just working away with terms. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Summing up, arithmetic in Prolog is easy to use. Pretty much all you have to remember is to use 
+<span class="verb">
+<span class="cmtt-10"> is 
+</span>
+</span> to force evaluation, that stuff to be evaluated must go to the right of 
+<span class="verb">
+<span class="cmtt-10"> is 
+</span>
+</span> , and to take care that any variables are correctly instantiated. But there is a deeper point that is worth reflecting on: bolting on the extra capability to do arithmetic in this way has further widened the gap between the procedural and declarative meanings of Prolog programs. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 5.3 
+</span>
+<a id="x35-480005.3">
+</a> Arithmetic and Lists 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Probably the most important use of arithmetic in this book is to tell us useful facts about data-structures, such as lists. For example, it can be useful to know how long a list is. We’ll give some examples of using lists together with arithmetic capabilities. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> How long is a list? Here’s a recursive definition. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<ol class="enumerate1">
+<li class="enumerate" id="x35-48002x1"> The empty list has length zero. 
+</li>
+<li class="enumerate" id="x35-48004x2"> A non-empty list has length 1 + 
+<span class="cmti-10"> len 
+</span> (T), where 
+<span class="cmti-10"> len 
+</span> (T) is the length of its tail. 
+</li>
+</ol>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> This definition is practically a Prolog program already. Here’s the code we need: 
+</p>
+</div>
+
+<div class="nb-cell program" data-background="true" data-below="true" name="fancyvrb248">
+len([],0). 
+len([_|T],N) :- len(T,X), N is X+1.
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> This predicate works in the expected way. For example: 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb249">
+len([a,b,c,d,e,[a,b],g],X). 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Now, this is quite a good program: it’s easy to understand and efficient. But there is another method of finding the length of a list. We’ll now look at this alternative, because it introduces the idea of accumulators. If you’re used to other programming languages, you’re probably used to the idea of using variables to hold intermediate results. An accumulator is the Prolog analog of this idea. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Here’s how to use an accumulator to calculate the length of a list. We shall define a predicate 
+<span class="verb">
+<span class="cmtt-10"> accLen 
+</span>
+</span> /3 which takes the following arguments. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb250">
+<a id="x35-48016r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;accLen(List,Acc,Length) 
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Here 
+<span class="verb">
+<span class="cmtt-10"> List 
+</span>
+</span> is the list whose length we want to find, and 
+<span class="verb">
+<span class="cmtt-10"> Length 
+</span>
+</span> is its length (an integer). What about 
+<span class="verb">
+<span class="cmtt-10"> Acc 
+</span>
+</span> ? This is the accumulator we will use to keep track of intermediate values for length (so it will also be an integer). Here’s what we do. When we call this predicate, we are going to give 
+<span class="verb">
+<span class="cmtt-10"> Acc 
+</span>
+</span> an initial value of 
+<span class="verb">
+<span class="cmtt-10"> 0 
+</span>
+</span> . We then recursively work our way down the list, adding 
+<span class="verb">
+<span class="cmtt-10"> 1 
+</span>
+</span> to 
+<span class="verb">
+<span class="cmtt-10"> Acc 
+</span>
+</span> each time we find a head element, until we reach the empty list. When we reach the empty list, 
+<span class="verb">
+<span class="cmtt-10"> Acc 
+</span>
+</span> will contain the length of the list. Here’s the code: 
+</p>
+</div>
+
+<div class="nb-cell program" data-background="true" data-below="true" name="fancyvrb251">
+accLen([_|T],A,L) :-  Anew is A+1, accLen(T,Anew,L). 
+accLen([],A,A).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> The base case of the definition, unifies the second and third arguments. Why? Because this trivial unification is a nice way of making sure that the result, that is, the length of the list, is returned. When we reach the end of the list, the accumulator (the second variable) contains the length of the list. So we give this value (via unification) to the length variable (the third variable). Here’s an example trace. You can clearly see how the length variable gets its value at the bottom of the recursion and passes it upwards as Prolog is coming out of the recursion. 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb252">
+%only press "Step Into" to see trace
+trace, accLen([a,b,c],0,L). 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> As a final step, we’ll define a predicate which calls 
+<span class="verb">
+<span class="cmtt-10"> accLen 
+</span>
+</span> for us, and gives it the initial value of 0: 
+</p>
+</div>
+
+<div class="nb-cell program" name="fancyvrb253">
+leng(List,Length) :- accLen(List,0,Length).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> So now we can pose queries like this: 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb254">
+leng([a,b,c,d,e,[a,b],g],X).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Accumulators are extremely common in Prolog programs. (We’ll see another accumulator based program in this chapter, and some more in later chapters.) But why is this? In what way is 
+<span class="verb">
+<span class="cmtt-10"> accLen 
+</span>
+</span> better than 
+<span class="verb">
+<span class="cmtt-10"> len 
+</span>
+</span> ? After all, it looks more difficult. The answer is that 
+<span class="verb">
+<span class="cmtt-10"> accLen 
+</span>
+</span> is tail recursive while 
+<span class="verb">
+<span class="cmtt-10"> len 
+</span>
+</span> is not. In tail recursive programs, the result is fully calculated once we reached the bottom of the recursion and just has to be passed up. In recursive programs which are not tail recursive, there are goals at other levels of recursion which have to wait for the answer from a lower level of recursion before they can be evaluated. To understand this, compare the traces for the queries 
+<span class="verb">
+<span class="cmtt-10"> accLen([a,b,c],0,L) 
+</span>
+</span> (see above) and 
+<span class="verb">
+<span class="cmtt-10"> len([a,b,c],0,L) 
+</span>
+</span> (given below). In the first case the result is built while going into the recursion — once the bottom is reached at 
+<span class="verb">
+<span class="cmtt-10"> accLen([],3,_G449) 
+</span>
+</span> , the result is there and only has to be passed up. In the second case the result is built while coming out of the recursion; the result of 
+<span class="verb">
+<span class="cmtt-10"> len([b,c], 
+</span>
+<span class="cmtt-10"> &nbsp;_G481) 
+</span>
+</span> , for instance, is only computed after the recursive call of 
+<span class="verb">
+<span class="cmtt-10"> len 
+</span>
+</span> has been completed and the result of 
+<span class="verb">
+<span class="cmtt-10"> len([c],_G489) 
+</span>
+</span> is known. In short, tail recursive programs have less bookkeeping overhead, and this makes them more efficient. 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb255">
+trace, len([a,b,c],L). 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 5.4 
+</span>
+<a id="x36-490005.4">
+</a> Comparing Integers 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Some Prolog arithmetic predicates actually do carry out arithmetic all by themselves (that is, without the assistance of 
+<span class="verb">
+<span class="cmtt-10"> is 
+</span>
+</span> ). These are the operators that compare integers. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="center">
+<!--l. 405-->
+<p class="noindent">
+</p>
+<div class="tabular">
+<table cellpadding="0" cellspacing="0" class="tabular" id="TBL-2">
+<colgroup id="TBL-2-1g">
+<col id="TBL-2-1">
+<col id="TBL-2-2">
+</colgroup>
+<tbody><tr id="TBL-2-1-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-2-1-1" style="white-space:nowrap; text-align:left;"> Arithmetic examples 
+</td>
+<td class="td11" id="TBL-2-1-2" style="white-space:nowrap; text-align:left;"> Prolog Notation 
+</td>
+</tr>
+<tr id="TBL-2-2-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-2-2-1" style="white-space:nowrap; text-align:left;">
+<span class="cmmi-10"> x &lt; y 
+</span>
+</td>
+<td class="td11" id="TBL-2-2-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;&lt; 
+</span>
+<span class="cmtt-10"> &nbsp;Y. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-2-3-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-2-3-1" style="white-space:nowrap; text-align:left;">
+<a id="dx36-49001">
+</a>
+<span class="cmmi-10"> x 
+</span>
+<span class="cmsy-10"> ≤ 
+</span>
+<span class="cmmi-10"> y 
+</span>
+</td>
+<td class="td11" id="TBL-2-3-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;=&lt; 
+</span>
+<span class="cmtt-10"> &nbsp;Y. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-2-4-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-2-4-1" style="white-space:nowrap; text-align:left;">
+<a id="dx36-49002">
+</a>
+<span class="cmmi-10"> x 
+</span> = 
+<span class="cmmi-10"> y 
+</span>
+</td>
+<td class="td11" id="TBL-2-4-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;=:= 
+</span>
+<span class="cmtt-10"> &nbsp;Y. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-2-5-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-2-5-1" style="white-space:nowrap; text-align:left;">
+<a id="dx36-49003">
+</a>
+<span class="cmmi-10"> x 
+</span>
+<span class="cmsy-10"> ⁄ 
+</span> = 
+<span class="cmmi-10"> y 
+</span>
+</td>
+<td class="td11" id="TBL-2-5-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;=\= 
+</span>
+<span class="cmtt-10"> &nbsp;Y. 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-2-6-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-2-6-1" style="white-space:nowrap; text-align:left;">
+<a id="dx36-49004">
+</a>
+<span class="cmmi-10"> x 
+</span>
+<span class="cmsy-10"> ≥ 
+</span>
+<span class="cmmi-10"> y 
+</span>
+</td>
+<td class="td11" id="TBL-2-6-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;&gt;= 
+</span>
+<span class="cmtt-10"> &nbsp;Y 
+</span>
+</span>
+</td>
+</tr>
+<tr id="TBL-2-7-" style="vertical-align:baseline;">
+<td class="td11" id="TBL-2-7-1" style="white-space:nowrap; text-align:left;">
+<a id="dx36-49005">
+</a>
+<span class="cmmi-10"> x &gt; y 
+</span>
+</td>
+<td class="td11" id="TBL-2-7-2" style="white-space:nowrap; text-align:left;">
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;&gt; 
+</span>
+<span class="cmtt-10"> &nbsp;Y 
+</span>
+</span>
+<a id="dx36-49006">
+</a>
+</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> These operators have the obvious meaning: 
+</p>
+</div>
+
+<div class="nb-cell query" name="q16">
+2 &lt; 4. 
+</div>
+
+<div class="nb-cell query" name="q15">
+2 =&lt; 4. 
+</div>
+
+<div class="nb-cell query" name="q14">
+4 =&lt; 4. 
+</div>
+
+<div class="nb-cell query" name="q13">
+4=:=4. 
+</div>
+
+<div class="nb-cell query" name="q12">
+4=\=5. 
+</div>
+
+<div class="nb-cell query" name="q11">
+4=\=4. 
+</div>
+
+<div class="nb-cell query" name="q10">
+4 &gt;= 4. 
+</div>
+
+<div class="nb-cell query" name="fancyvrb256">
+4 &gt; 2.
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Moreover, they force both their right hand and left hand arguments to be evaluated: 
+</p>
+</div>
+
+<div class="nb-cell query" name="q18">
+2 &lt; 4+1. 
+</div>
+
+<div class="nb-cell query" name="q17">
+2+1 &lt; 4.
+</div>
+
+<div class="nb-cell query" name="fancyvrb257">
+2+1 &lt; 3+2. 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Note that 
+<span class="verb">
+<span class="cmtt-10"> =:= 
+</span>
+</span> is different from 
+<span class="verb">
+<span class="cmtt-10"> = 
+</span>
+</span> , as the following examples show: 
+</p>
+</div>
+
+<div class="nb-cell query" name="q19">
+4=4. 
+</div>
+
+<div class="nb-cell query" name="q20">
+2+2 = 4.
+</div>
+
+<div class="nb-cell query" name="fancyvrb258">
+2+2 =:= 4. 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> That is, 
+<span class="verb">
+<span class="cmtt-10"> = 
+</span>
+</span> tries to unify its arguments; it does 
+<span class="cmti-10"> not 
+</span> force arithmetic evaluation. That’s 
+<span class="verb">
+<span class="cmtt-10"> =:= 
+</span>
+</span> ’s job. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Whenever we use these operators, we have to take care that any variables are instantiated. For example, all the following queries lead to instantiation errors. 
+</p>
+</div>
+
+<div class="nb-cell query" name="q21">
+X &lt; 3. 
+</div>
+
+<div class="nb-cell query" name="q22">
+3 &lt; Y. 
+</div>
+
+<div class="nb-cell query" name="q23">
+X =:= X.
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Moreover, variables have to be instantiated to 
+<span class="cmti-10"> integers 
+</span> . The query 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb260">
+X = 3, X &lt; 4.
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> succeeds. But the query 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb261">
+X = b, X &lt; 4.
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> fails. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Ok, let’s now look at an example which puts Prolog’s abilities to compare numbers to work. We’re going to define a predicate which takes a non-empty list of non-negative integers as its first argument, and returns the maximum integer in the list as its last argument. Again, we’ll use an accumulator. As we work our way down the list, the accumulator will keep track of the highest integer found so far. If we find a higher value, the accumulator will be updated to this new value. When we call the program, we set the accumulator to an initial value of 0. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Here’s the code. Note that there are 
+<span class="cmti-10"> two 
+</span> recursive clauses: 
+</p>
+</div>
+
+<div class="nb-cell program" data-background="true" data-below="true" name="fancyvrb262">
+accMax([H|T],A,Max) :- 
+   H &gt; A, 
+   accMax(T,H,Max). 
+ 
+accMax([H|T],A,Max) :- 
+   H =&lt; A, 
+   accMax(T,A,Max). 
+ 
+accMax([],A,A).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> The first clause tests if the head of the list is larger than the largest value found so far. If it is, we set the accumulator to this new value, and then recursively work through the tail of the list. The second clause applies when the head is less than or equal to the accumulator; in this case we recursively work through the tail of the list using the old accumulator value. Finally, the base clause unifies the second and third arguments; it gives the highest value we found while going through the list to the last argument. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Here’s an example query: 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb263">
+accMax([1,0,5,4],0,Max).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Here the first clause of 
+<span class="verb">
+<span class="cmtt-10"> accMax 
+</span>
+</span> applies, resulting in the following goal: 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb264">
+accMax([0,5,4],1,Max).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Note the value of the accumulator has changed to 1. Now the second clause of 
+<span class="verb">
+<span class="cmtt-10"> accMax 
+</span>
+</span> applies, as 0 (the next element of the list) is smaller than 1, the value of the accumulator. This process is repeated until we reach the empty list: 
+</p>
+</div>
+
+<div class="nb-cell query" name="q24">
+accMax([5,4],1,Max). 
+</div>
+
+<div class="nb-cell query" name="q25">
+accMax([4],5,Max). 
+</div>
+
+<div class="nb-cell query" name="q26">
+accMax([],5,Max).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Now the third clause applies, unifying the variable 
+<span class="verb">
+<span class="cmtt-10"> Max 
+</span>
+</span> with the value of the accumulator: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb266">
+<a id="x36-49132r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Max 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;5. 
+</span>
+<br class="fancyvrb">
+<a id="x36-49134r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;yes 
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Again, it’s nice to define a predicate which calls this, and initialises the accumulator. But wait: what should we initialise the accumulator to? If you say 0, this means you are assuming that all the numbers in the list are positive. But suppose we give a list of negative integers as input. Then we would have 
+</p>
+</div>
+
+<div class="nb-cell query" name="fancyvrb267">
+accMax([-11,-2,-7,-4,-12],0,Max).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> This is 
+<span class="cmti-10"> not 
+</span> what we want: the biggest number on the list is -2. Our use of 0 as the initial value of the accumulator has ruined everything, because it’s bigger than any number on the list. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> There’s an easy way around this: since our input list will always be a non-empty list of integers, simply initialise the accumulator to the head of the list. That way we guarantee that the accumulator is initialised to a number on the list. The following predicate does this for us: 
+</p>
+</div>
+
+<div class="nb-cell program" name="fancyvrb268">
+max(List,Max) :- 
+     List = [H|_], 
+     accMax(List,H,Max).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> So we can simply say: 
+</p>
+</div>
+
+<div class="nb-cell query" name="q27">
+max([1,2,46,53,0],X). 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> And furthermore we have: 
+</p>
+</div>
+
+<div class="nb-cell query" name="q28">
+max([-11,-2,-7,-4,-12],X). 
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 5.5 
+</span>
+<a id="x37-500005.5">
+</a> <strong>Exercise</strong>s 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 596-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;5.1 
+</span>
+</span>
+<a id="x37-500011">
+</a>
+<span class="cmti-10"> How does Prolog respond to the following queries? 
+</span>
+</p>
+
+</div>
+</div>
+
+<div class="nb-cell query" name="q47">
+X  =  3*4.
+</div>
+
+<div class="nb-cell query" name="q46">
+X  is  3*4.
+</div>
+
+<div class="nb-cell query" name="q45">
+4  is  X.
+</div>
+
+<div class="nb-cell query" name="q44">
+X  =  Y.
+</div>
+
+<div class="nb-cell query" name="q43">
+3  is  1+2.
+</div>
+
+<div class="nb-cell query" name="q42">
+3  is  +(1,2).
+</div>
+
+<div class="nb-cell query" name="q41">
+3  is  X+2.
+</div>
+
+<div class="nb-cell query" name="q40">
+X  is  1+2.
+</div>
+
+<div class="nb-cell query" name="q39">
+% fails because is operator only evaluates right side
+1+2  is  1+2.
+</div>
+
+<div class="nb-cell query" name="q38">
+is(X,+(1,2)).
+</div>
+
+<div class="nb-cell query" name="q37">
+3+2  =  +(3,2).
+</div>
+
+<div class="nb-cell query" name="q36">
+*(7,5)  =  7*5.
+</div>
+
+<div class="nb-cell query" name="q35">
+*(7,+(3,2))  =  7*(3+2).
+</div>
+
+<div class="nb-cell query" name="q34">
+*(7,(3+2))  =  7*(3+2).
+</div>
+
+<div class="nb-cell query" name="q33">
+7*3+2  =  *(7,+(3,2)).
+</div>
+
+<div class="nb-cell query" name="q32">
+*(7,(3+2))  =  7*(+(3,2)).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 616-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;5.2 
+</span>
+</span>
+<a id="x37-500342">
+</a>
+</p>
+<ol class="enumerate1" start="1">
+<li class="enumerate" id="x37-50036x1">
+<span class="cmti-10"> Define a 2-place predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> increment 
+</span>
+</span>
+<span class="cmti-10"> that holds only when its second 
+</span>
+<span class="cmti-10"> argument is an integer one larger than its first argument. For example, 
+</span>
+<span class="verb">
+<span class="cmtt-10"> increment(4,5) 
+</span>
+</span>
+<span class="cmti-10"> should hold, but 
+</span>
+<span class="verb">
+<span class="cmtt-10"> increment(4,6) 
+</span>
+</span>
+<span class="cmti-10"> should not. 
+</span>
+</li>
+
+</ol>
+</div>
+</div>
+
+<div class="nb-cell program" name="p1">
+increment(X,Y):- Y is X+1.
+</div>
+
+<div class="nb-cell query" name="q29">
+increment(4,5)
+</div>
+
+<div class="nb-cell query" name="q30">
+increment(4,6)
+</div>
+
+<div class="nb-cell html" name="htm2">
+<div class="newtheorem">
+
+<ol class="enumerate1" start="2">
+
+<li class="enumerate" id="x37-50038x2">
+<span class="cmti-10"> Define a 3-place predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> sum 
+</span>
+</span>
+<span class="cmti-10"> that holds only when its third argument is 
+</span>
+<span class="cmti-10"> the sum of the first two arguments. For example, 
+</span>
+<span class="verb">
+<span class="cmtt-10"> sum(4,5,9) 
+</span>
+</span>
+<span class="cmti-10"> should hold, 
+</span>
+<span class="cmti-10"> but 
+</span>
+<span class="verb">
+<span class="cmtt-10"> sum(4,6,12) 
+</span>
+</span>
+<span class="cmti-10"> should not. 
+</span>
+</li>
+</ol>
+</div>
+</div>
+
+<div class="nb-cell program" name="p4">
+sum(X,Y,Z):- Z is X+Y.
+</div>
+
+<div class="nb-cell query" name="q31">
+sum(4,5,9)
+</div>
+
+<div class="nb-cell query" name="q48">
+sum(4,6,12)
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 629-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;5.3 
+</span>
+</span>
+<a id="x37-500393">
+</a>
+<span class="cmti-10"> Write a predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> addone/2 
+</span>
+</span>
+<span class="cmti-10"> whose first argument is a list of integers, 
+</span>
+<span class="cmti-10"> and whose second argument is the list of integers obtained by adding 1 to each integer 
+</span>
+<span class="cmti-10"> in the first list. For example, the query 
+</span>
+</p>
+<div class="fancyvrb" id="fancyvrb271">
+<a id="x37-50041r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;addone([1,2,7,2],X). 
+</span>
+</div>
+<!--l. 636-->
+<p class="noindent">
+<span class="cmti-10"> should give 
+</span>
+</p>
+<div class="fancyvrb" id="fancyvrb272">
+<a id="x37-50043r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[2,3,8,3]. 
+</span>
+</div>
+</div>
+</div>
+
+<div class="nb-cell program" name="p2">
+addone([],[]).
+addone([H1|T1],[H2|T2]):- H2 is H1+1, addone(T1,T2).
+</div>
+
+<div class="nb-cell query" name="q49">
+addone([1,2,7,2],X).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 5.6 
+</span>
+<a id="x38-510005.6">
+</a> Practical Session 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> The purpose of Practical Session 5 is to help you get familiar with Prolog’s arithmetic capabilities, and to give you some further practice in list manipulation. To this end, we suggest the following programming exercises: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<ol class="enumerate1">
+<li class="enumerate" id="x38-51002x1"> In the text we discussed the 3-place predicate 
+<span class="verb">
+<span class="cmtt-10"> accMax 
+</span>
+</span> which returned the maximum of a list of integers. By changing the code slightly, turn this into a 3-place predicate 
+<span class="verb">
+<span class="cmtt-10"> accMin 
+</span>
+</span> which returns the 
+<span class="cmti-10"> minimum 
+</span> of a list of integers. 
+</li>
+
+
+</ol>
+</div>
+
+<div class="nb-cell program" name="p3">
+accMin([H|T],A,Min) :- 
+   H &lt; A, 
+   accMin(T,H,Min). 
+ 
+accMin([H|T],A,Min) :- 
+   H &gt;= A, 
+   accMin(T,A,Min). 
+ 
+accMin([],A,A).
+</div>
+
+<div class="nb-cell query" name="q52">
+accMin([-1,1],0,R)
+</div>
+
+<div class="nb-cell html" name="htm3">
+<ol class="enumerate1" start="2">
+
+<li class="enumerate" id="x38-51004x2"> In mathematics, an n-dimensional vector is a list of numbers of length n. For example, 
+<span class="verb">
+<span class="cmtt-10"> [2,5,12] 
+</span>
+</span> is a 3-dimensional vector, and 
+<span class="verb">
+<span class="cmtt-10"> [45,27,3,-4,6] 
+</span>
+</span> is a 5-dimensional vector. One of the basic operations on vectors is 
+<span class="cmti-10"> scalar 
+</span>
+<span class="cmti-10"> multiplication 
+</span> . In this operation, every element of a vector is multiplied by some number. For example, if we scalar multiply the 3-dimensional vector 
+<span class="verb">
+<span class="cmtt-10"> [2,7,4] 
+</span>
+</span> by 
+<span class="verb">
+<span class="cmtt-10"> 3 
+</span>
+</span> the result is the 3-dimensional vector 
+<span class="verb">
+<span class="cmtt-10"> [6,21,12] 
+</span>
+</span> . 
+<!--l. 667-->
+<p class="noindent"> Write a 3-place predicate 
+<span class="verb">
+<span class="cmtt-10"> scalarMult 
+</span>
+</span> whose first argument is an integer, whose second argument is a list of integers, and whose third argument is the result of scalar multiplying the second argument by the first. For example, the query 
+</p>
+<div class="fancyvrb" id="fancyvrb273">
+<a id="x38-51006r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;scalarMult(3,[2,7,4],Result). 
+</span>
+</div>
+<!--l. 675-->
+<p class="noindent"> should yield 
+</p>
+<div class="fancyvrb" id="fancyvrb274">
+<a id="x38-51008r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Result 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[6,21,12] 
+</span>
+</div>
+</li>
+
+</ol>
+</div>
+
+<div class="nb-cell program" name="p5">
+scalarMult(_,[],[]).
+scalarMult(N,[H1|T1],[H2|T2]):- H2 is H1*N, scalarMult(N,T1,T2).
+</div>
+
+<div class="nb-cell query" name="q50">
+scalarMult(3,[2,7,4],Result).
+</div>
+
+<div class="nb-cell html" name="htm4">
+<ol class="enumerate1" start="3">
+
+<li class="enumerate" id="x38-51010x3"> Another fundamental operation on vectors is the 
+<span class="cmti-10"> dot product 
+</span> . This operation combines two vectors of the same dimension and yields a number as a result. The operation is carried out as follows: the corresponding elements of the two vectors are multiplied, and the results added. For example, the dot product of 
+<span class="verb">
+<span class="cmtt-10"> [2,5,6] 
+</span>
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> [3,4,1] 
+</span>
+</span> is 
+<span class="verb">
+<span class="cmtt-10"> 6+20+6 
+</span>
+</span> , that is, 
+<span class="verb">
+<span class="cmtt-10"> 32 
+</span>
+</span> . Write a 3-place predicate 
+<span class="verb">
+<span class="cmtt-10"> dot 
+</span>
+</span> whose first argument is a list of integers, whose second argument is a list of integers of the same length as the first, and whose third argument is the dot product of the first argument with the second. For example, the query 
+<div class="fancyvrb" id="fancyvrb275">
+<a id="x38-51012r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;dot([2,5,6],[3,4,1],Result). 
+</span>
+</div>
+<!--l. 694-->
+<p class="noindent"> should yield 
+</p>
+<div class="fancyvrb" id="fancyvrb276">
+<a id="x38-51014r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Result 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;32 
+</span>
+</div>
+</li>
+</ol>
+</div>
+
+<div class="nb-cell program" name="p6">
+sumList([],0).
+sumList([H|T],SumHT):- sumList(T,SumT), SumHT is SumT+H. % sumList(T,SumT) should be called first to instanciate SumT
+
+prodLists([],[],[]).
+prodLists([H1|T1],[H2|T2],[HR|TR]):- HR is H1*H2, prodLists(T1,T2,TR).
+
+dot(L1,L2,R):- prodLists(L1,L2,PL), sumList(PL,R).
+</div>
+
+<div class="nb-cell query" name="q51">
+dot([2,5,6],[3,4,1],Result).
+</div>
+
+</div>
