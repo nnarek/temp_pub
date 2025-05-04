@@ -1,0 +1,3139 @@
+<div class="notebook">
+
+<div class="nb-cell html" name="htm1">
+<style>
+  .fake-link {
+    color: royalblue;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .fake-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+
+
+
+
+
+<h2 class="chapterHead">
+<span class="titlemark"> Chapter&nbsp;6 
+</span>
+<br>
+<a id="x39-520006">
+</a> More Lists 
+</h2>
+
+
+
+
+<p class="noindent"> This chapter has two main goals: 
+</p>
+
+
+<ol class="enumerate1">
+<li class="enumerate" id="x39-52002x1"> To define 
+<span class="cmtt-10"> append/3 
+</span> , a predicate for concatenating two lists, and illustrate what can be done with it. 
+</li>
+<li class="enumerate" id="x39-52004x2"> To discuss two ways of reversing a list: a naive method using 
+<span class="cmtt-10"> append/3 
+</span> , and a more efficient method using accumulators. 
+</li>
+</ol>
+
+
+<div class="sectionTOCS"> &nbsp; 
+<span class="sectionToc"> 6.1 
+<span class="fake-link" onclick="document.getElementById('x40-530006.1').scrollIntoView();"> Append 
+</span>
+</span>
+<br> &nbsp;&nbsp; 
+<span class="likesubsectionToc">
+<span class="fake-link" onclick="document.getElementById('PASTE_ID_HERE').scrollIntoView();"> Defining append 
+</span>
+</span>
+<br> &nbsp;&nbsp; 
+<span class="likesubsectionToc">
+<span class="fake-link" onclick="document.getElementById('PASTE_ID_HERE').scrollIntoView();"> Using append 
+</span>
+</span>
+<br> &nbsp; 
+<span class="sectionToc"> 6.2 
+<span class="fake-link" onclick="document.getElementById('PASTE_ID_HERE').scrollIntoView();"> Reversing a List 
+</span>
+</span>
+<br> &nbsp;&nbsp; 
+<span class="likesubsectionToc">
+<span class="fake-link" onclick="document.getElementById('PASTE_ID_HERE').scrollIntoView();"> Naive reverse using append 
+</span>
+</span>
+<br> &nbsp;&nbsp; 
+<span class="likesubsectionToc">
+<span class="fake-link" onclick="document.getElementById('PASTE_ID_HERE').scrollIntoView();"> Reverse using an accumulator 
+</span>
+</span>
+<br> &nbsp; 
+<span class="sectionToc"> 6.3 
+<span class="fake-link" onclick="document.getElementById('PASTE_ID_HERE').scrollIntoView();"> <strong>Exercise</strong>s 
+</span>
+</span>
+<br> &nbsp; 
+<span class="sectionToc"> 6.4 
+<span class="fake-link" onclick="document.getElementById('PASTE_ID_HERE').scrollIntoView();"> Practical Session 
+</span>
+</span>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 6.1 
+</span>
+<a id="x40-530006.1">
+</a> Append 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> We shall define an important predicate 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> whose arguments are all lists. Viewed declaratively, 
+<span class="verb">
+<span class="cmtt-10"> append(L1,L2,L3) 
+</span>
+</span> will 
+<a id="dx40-53001">
+</a> hold when the list 
+<span class="verb">
+<span class="cmtt-10"> L3 
+</span>
+</span> is the result of concatenating the lists 
+<span class="verb">
+<span class="cmtt-10"> L1 
+</span>
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> L2 
+</span>
+</span> together (concatenating means joining the lists together, end to end). For example, if we pose the query 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb277">
+<a id="x40-53003r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;append([a,b,c],[1,2,3],[a,b,c,1,2,3]). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell query" name="fancyvrb277">
+append([a,b,c],[1,2,3],[a,b,c,1,2,3]).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> or the query 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb278">
+<a id="x40-53005r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;append([a,[foo,gibble],c],[1,2,[[],b]], 
+</span>
+<br class="fancyvrb">
+<a id="x40-53007r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;[a,[foo,gibble],c,1,2,[[],b]). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell query" name="fancyvrb278">
+append([a,[foo,gibble],c],[1,2,[[],b]], 
+          [a,[foo,gibble],c,1,2,[[],b]).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> we will get the response yes. On the other hand, if we pose the query 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb279">
+<a id="x40-53009r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;append([a,b,c],[1,2,3],[a,b,c,1,2]). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell query" name="fancyvrb279">
+append([a,b,c],[1,2,3],[a,b,c,1,2]).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> or the query 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb280">
+<a id="x40-53011r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;append([a,b,c],[1,2,3],[1,2,3,a,b,c]). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell query" name="fancyvrb280">
+append([a,b,c],[1,2,3],[1,2,3,a,b,c]).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> we will get the answer no. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> From a procedural perspective, the most obvious use of 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> is to concatenate two lists together. We can do this simply by using a variable as the third argument: the query 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb281">
+<a id="x40-53013r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;append([a,b,c],[1,2,3],L3). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell query" name="fancyvrb281">
+append([a,b,c],[1,2,3],L3).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> yields the response 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb282">
+<a id="x40-53015r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;L3 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,1,2,3] 
+</span>
+<br class="fancyvrb">
+<a id="x40-53017r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;yes 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb282">
+L3 = [a,b,c,1,2,3] 
+yes
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> But (as we shall soon see) we can also use 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> to split up a list. In fact, 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> is a real workhorse. There’s lots we can do with it, and studying it is a good way to gain a better understanding of list processing in Prolog. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent">
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h4 class="likesubsectionHead">
+<a id="x40-540006.1">
+</a> Defining append 
+</h4>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Here’s how 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> is defined: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb283">
+<a id="x40-54002r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([],L,L). 
+</span>
+<br class="fancyvrb">
+<a id="x40-54004r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([H|T],L2,[H|L3]) 
+</span>
+<span class="cmtt-10"> &nbsp;:- 
+</span>
+<span class="cmtt-10"> &nbsp;append(T,L2,L3). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb283">
+append([],L,L). 
+append([H|T],L2,[H|L3]) :- append(T,L2,L3).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> This is a recursive definition. The base case simply says that appending the empty list to any list whatsoever yields that same list, which is obviously true. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> But what about the recursive step? This says that when we concatenate a non-empty list 
+<span class="verb">
+<span class="cmtt-10"> [H|T] 
+</span>
+</span> with a list 
+<span class="verb">
+<span class="cmtt-10"> L2 
+</span>
+</span> , we end up with the list whose head is 
+<span class="verb">
+<span class="cmtt-10"> H 
+</span>
+</span> and whose tail is the result of concatenating 
+<span class="verb">
+<span class="cmtt-10"> T 
+</span>
+</span> with 
+<span class="verb">
+<span class="cmtt-10"> L2 
+</span>
+</span> . It may be useful to think about this definition pictorially: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="quote">
+<!--l. 92-->
+<p class="noindent"> Input: [ H 
+<span class="cmsy-10"> ∣ 
+</span>
+<span class="fbox"> &nbsp;T &nbsp; 
+</span> ] + 
+<span class="fbox"> &nbsp;L2 &nbsp; 
+</span>
+<br class="newline"> Result: [ H 
+<span class="cmsy-10"> ∣ 
+</span>
+<img alt="|----| ◟L ◝3◜-◞-" src="https://www.let.rug.nl/bos/lpn/html/lpn-html0x.png">
+<sub>
+<span class="fbox"> T 
+</span>
+<span class="cmr-7"> + 
+</span>
+<span class="fbox"> L2 
+</span>
+</sub> ] 
+</p>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> But what is the procedural meaning of this definition? What actually goes on when we use 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> to glue two lists together? Let’s take a detailed look at what happens when we pose the query 
+<span class="verb">
+<span class="cmtt-10"> ?- 
+</span>
+<span class="cmtt-10"> &nbsp;append([a,b,c],[1,2,3],X) 
+</span>
+</span> . 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> When we pose this query, Prolog will match it to the head of the recursive rule, generating a new internal variable (say 
+<span class="verb">
+<span class="cmtt-10"> _G518 
+</span>
+</span> ) in the process. If we carried out a trace of what happens next, we would get something like the following: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb284">
+<a id="x40-54006r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([a, 
+</span>
+<span class="cmtt-10"> &nbsp;b, 
+</span>
+<span class="cmtt-10"> &nbsp;c], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3], 
+</span>
+<span class="cmtt-10"> &nbsp;_G518) 
+</span>
+<br class="fancyvrb">
+<a id="x40-54008r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([b, 
+</span>
+<span class="cmtt-10"> &nbsp;c], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3], 
+</span>
+<span class="cmtt-10"> &nbsp;_G587) 
+</span>
+<br class="fancyvrb">
+<a id="x40-54010r3">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([c], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3], 
+</span>
+<span class="cmtt-10"> &nbsp;_G590) 
+</span>
+<br class="fancyvrb">
+<a id="x40-54012r4">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3], 
+</span>
+<span class="cmtt-10"> &nbsp;_G593) 
+</span>
+<br class="fancyvrb">
+<a id="x40-54014r5">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3]) 
+</span>
+<br class="fancyvrb">
+<a id="x40-54016r6">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([c], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3], 
+</span>
+<span class="cmtt-10"> &nbsp;[c, 
+</span>
+<span class="cmtt-10"> &nbsp;1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3]) 
+</span>
+<br class="fancyvrb">
+<a id="x40-54018r7">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([b, 
+</span>
+<span class="cmtt-10"> &nbsp;c], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3], 
+</span>
+<span class="cmtt-10"> &nbsp;[b, 
+</span>
+<span class="cmtt-10"> &nbsp;c, 
+</span>
+<span class="cmtt-10"> &nbsp;1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3]) 
+</span>
+<br class="fancyvrb">
+<a id="x40-54020r8">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;append([a, 
+</span>
+<span class="cmtt-10"> &nbsp;b, 
+</span>
+<span class="cmtt-10"> &nbsp;c], 
+</span>
+<span class="cmtt-10"> &nbsp;[1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3], 
+</span>
+<span class="cmtt-10"> &nbsp;[a, 
+</span>
+<span class="cmtt-10"> &nbsp;b, 
+</span>
+<span class="cmtt-10"> &nbsp;c, 
+</span>
+<span class="cmtt-10"> &nbsp;1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3]) 
+</span>
+<br class="fancyvrb">
+<a id="x40-54022r9">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-54024r10">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a, 
+</span>
+<span class="cmtt-10"> &nbsp;b, 
+</span>
+<span class="cmtt-10"> &nbsp;c, 
+</span>
+<span class="cmtt-10"> &nbsp;1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3] 
+</span>
+<br class="fancyvrb">
+<a id="x40-54026r11">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;yes 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb284">
+append([a, b, c], [1, 2, 3], _G518) 
+append([b, c], [1, 2, 3], _G587) 
+append([c], [1, 2, 3], _G590) 
+append([], [1, 2, 3], _G593) 
+append([], [1, 2, 3], [1, 2, 3]) 
+append([c], [1, 2, 3], [c, 1, 2, 3]) 
+append([b, c], [1, 2, 3], [b, c, 1, 2, 3]) 
+append([a, b, c], [1, 2, 3], [a, b, c, 1, 2, 3]) 
+ 
+X = [a, b, c, 1, 2, 3] 
+yes
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> The basic pattern should be clear: in the first four lines we see that Prolog recurses its way down the list in its first argument until it can apply the base case of the recursive definition. Then, as the next four lines show, it then stepwise ‘fills in’ the result. How is this ‘filling in’ process carried out? By successively instantiating the variables 
+<span class="verb">
+<span class="cmtt-10"> _G593 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> _G590 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> _G587 
+</span>
+</span> , and 
+<span class="verb">
+<span class="cmtt-10"> _G518 
+</span>
+</span> . But while it’s important to grasp this basic pattern, it doesn’t tell us all we need to know about the way 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> works, so let’s dig deeper. Here is the search tree for the query 
+<span class="verb">
+<span class="cmtt-10"> append([a,b,c],[1,2,3],X) 
+</span>
+</span> . We’ll work carefully through all the steps, making a careful note of what our goals are, and what the variables are instantiated to. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="center">
+<!--l. 140-->
+<p class="noindent">
+</p>
+<!--l. 141-->
+<p class="noindent">
+<img alt="*Pic not found*" src="https://www.let.rug.nl/bos/lpn/html/chap6-pspic1.ps.png">
+</p>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<ol class="enumerate1">
+<li class="enumerate" id="x40-54028x1"> Goal 1: 
+<span class="verb">
+<span class="cmtt-10"> append([a,b,c],[1,2,3],_G518) 
+</span>
+</span> . Prolog matches this to the head of the recursive rule (that is, 
+<span class="verb">
+<span class="cmtt-10"> append([H|T],L2,[H|L3]) 
+</span>
+</span> ). Thus 
+<span class="verb">
+<span class="cmtt-10"> _G518 
+</span>
+</span> is unified to 
+<span class="verb">
+<span class="cmtt-10"> [a|L3] 
+</span>
+</span> , and Prolog has the new goal 
+<span class="verb">
+<span class="cmtt-10"> append([b,c],[1,2,3],L3) 
+</span>
+</span> . It generates a new variable 
+<span class="verb">
+<span class="cmtt-10"> _G587 
+</span>
+</span> for 
+<span class="verb">
+<span class="cmtt-10"> L3 
+</span>
+</span> , thus we have that 
+<span class="verb">
+<span class="cmtt-10"> _G518 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a|_G587] 
+</span>
+</span> . 
+</li>
+<li class="enumerate" id="x40-54030x2"> Goal 2: 
+<span class="verb">
+<span class="cmtt-10"> append([b,c],[1,2,3],_G587) 
+</span>
+</span> . Prolog matches this to the head of the recursive rule, thus 
+<span class="verb">
+<span class="cmtt-10"> _G587 
+</span>
+</span> is unified to 
+<span class="verb">
+<span class="cmtt-10"> [b|L3] 
+</span>
+</span> , and Prolog has the new goal 
+<span class="verb">
+<span class="cmtt-10"> append([c],[1,2,3],L3) 
+</span>
+</span> . It generates the internal variable 
+<span class="verb">
+<span class="cmtt-10"> _G590 
+</span>
+</span> for 
+<span class="verb">
+<span class="cmtt-10"> L3 
+</span>
+</span> , thus we have that 
+<span class="verb">
+<span class="cmtt-10"> _G587 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[b|_G590] 
+</span>
+</span> . 
+</li>
+<li class="enumerate" id="x40-54032x3"> Goal 3: 
+<span class="verb">
+<span class="cmtt-10"> append([c],[1,2,3],_G590 
+</span>
+</span> ). Prolog matches this to the head of the recursive rule, thus 
+<span class="verb">
+<span class="cmtt-10"> _G590 
+</span>
+</span> is unified to 
+<span class="verb">
+<span class="cmtt-10"> [c|L3] 
+</span>
+</span> , and Prolog has the new goal 
+<span class="verb">
+<span class="cmtt-10"> append([],[1,2,3],L3) 
+</span>
+</span> . It generates the internal variable 
+<span class="verb">
+<span class="cmtt-10"> _G593 
+</span>
+</span> for 
+<span class="verb">
+<span class="cmtt-10"> L3 
+</span>
+</span> , thus we have that 
+<span class="verb">
+<span class="cmtt-10"> _G590 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[c|_G593] 
+</span>
+</span> . 
+</li>
+<li class="enumerate" id="x40-54034x4"> Goal 4: 
+<span class="verb">
+<span class="cmtt-10"> append([],[1,2,3],_G593 
+</span>
+</span> ). At last: Prolog can use the base clause (that is, 
+<span class="verb">
+<span class="cmtt-10"> append([],L,L) 
+</span>
+</span> ). And in the four successive matching steps, Prolog will obtain answers to Goal 4, Goal 3, Goal 2, and Goal 1. Here’s how. 
+</li>
+<li class="enumerate" id="x40-54036x5"> Answer to Goal 4: 
+<span class="verb">
+<span class="cmtt-10"> append([],[1,2,3],[1,2,3]) 
+</span>
+</span> . This is because when we match Goal 4 (that is, 
+<span class="verb">
+<span class="cmtt-10"> append([],[1,2,3],_G593) 
+</span>
+</span> to the base clause, 
+<span class="verb">
+<span class="cmtt-10"> _G593 
+</span>
+</span> is unified to 
+<span class="verb">
+<span class="cmtt-10"> [1,2,3] 
+</span>
+</span> . 
+</li>
+<li class="enumerate" id="x40-54038x6"> Answer to Goal 3: 
+<span class="verb">
+<span class="cmtt-10"> append([c],[1,2,3],[c,1,2,3]) 
+</span>
+</span> . Why? Because Goal 3 is 
+<span class="verb">
+<span class="cmtt-10"> append([c],[1,2,3],_G590]) 
+</span>
+</span> , and 
+<span class="verb">
+<span class="cmtt-10"> _G590 
+</span>
+</span> is the list 
+<span class="verb">
+<span class="cmtt-10"> [c|_G593] 
+</span>
+</span> , and we have just unified 
+<span class="verb">
+<span class="cmtt-10"> _G593 
+</span>
+</span> to 
+<span class="verb">
+<span class="cmtt-10"> [1,2,3] 
+</span>
+</span> . So 
+<span class="verb">
+<span class="cmtt-10"> _G590 
+</span>
+</span> is unified to 
+<span class="verb">
+<span class="cmtt-10"> [c,1,2,3] 
+</span>
+</span> . 
+</li>
+<li class="enumerate" id="x40-54040x7"> Answer to Goal 2: 
+<span class="verb">
+<span class="cmtt-10"> append([b,c],[1,2,3],[b,c,1,2,3]) 
+</span>
+</span> . Why? Because Goal 2 is 
+<span class="verb">
+<span class="cmtt-10"> append([b,c],[1,2,3],_G587]) 
+</span>
+</span> , and 
+<span class="verb">
+<span class="cmtt-10"> _G587 
+</span>
+</span> is the list 
+<span class="verb">
+<span class="cmtt-10"> [b|_G590] 
+</span>
+</span> , and we have just unified 
+<span class="verb">
+<span class="cmtt-10"> _G590 
+</span>
+</span> to 
+<span class="verb">
+<span class="cmtt-10"> [c,1,2,3] 
+</span>
+</span> . So 
+<span class="verb">
+<span class="cmtt-10"> _G587 
+</span>
+</span> is unified to 
+<span class="verb">
+<span class="cmtt-10"> [b,c,1,2,3] 
+</span>
+</span> . 
+</li>
+<li class="enumerate" id="x40-54042x8"> Answer to Goal 1: 
+<span class="verb">
+<span class="cmtt-10"> append([a,b,c],[1,2,3],[b,c,1,2,3]) 
+</span>
+</span> . Why? Because Goal 2 is 
+<span class="verb">
+<span class="cmtt-10"> append([a,b,c],[1,2,3],_G518]) 
+</span>
+</span> , and 
+<span class="verb">
+<span class="cmtt-10"> _G518 
+</span>
+</span> is the list 
+<span class="verb">
+<span class="cmtt-10"> [a|_G587] 
+</span>
+</span> , and we have just unified 
+<span class="verb">
+<span class="cmtt-10"> _G587 
+</span>
+</span> to 
+<span class="verb">
+<span class="cmtt-10"> [b,c,1,2,3] 
+</span>
+</span> . So 
+<span class="verb">
+<span class="cmtt-10"> _G518 
+</span>
+</span> is unified to 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,1,2,3] 
+</span>
+</span> . 
+</li>
+<li class="enumerate" id="x40-54044x9"> Thus Prolog now knows how to instantiate 
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+</span> , the original query variable. It tells us that 
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,1,2,3] 
+</span>
+</span> , which is what we want. 
+</li>
+</ol>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Work through this example carefully, and make sure you fully understand the pattern of variable instantiations, namely: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb285">
+<a id="x40-54046r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;_G518 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a|_G587] 
+</span>
+<br class="fancyvrb">
+<a id="x40-54048r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a|[b|_G590]] 
+</span>
+<br class="fancyvrb">
+<a id="x40-54050r3">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a|[b|[c|_G593]]] 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb285">
+_G518 = [a|_G587] 
+      = [a|[b|_G590]] 
+      = [a|[b|[c|_G593]]]
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> This type of pattern lies at the heart of the way 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> works. Moreover, it illustrates a more general theme: the use of unification to build structure. In a nutshell, the recursive calls to 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> build up this nested pattern of variables which code up the required answer. When Prolog finally instantiates the innermost variable 
+<span class="verb">
+<span class="cmtt-10"> _G593 
+</span>
+</span> to 
+<span class="verb">
+<span class="cmtt-10"> [1, 
+</span>
+<span class="cmtt-10"> &nbsp;2, 
+</span>
+<span class="cmtt-10"> &nbsp;3] 
+</span>
+</span> , the answer crystallises out, like a snowflake forming around a grain of dust. But it is unification, not magic, that produces the result. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent">
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h4 class="likesubsectionHead">
+<a id="x40-550006.1">
+</a> Using append 
+</h4>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Now that we understand how 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> works, let’s see how we can put it to work. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> One important use of 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> is to split up a list into two consecutive lists. For example: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb286">
+<a id="x40-55002r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;append(X,Y,[a,b,c,d]). 
+</span>
+<br class="fancyvrb">
+<a id="x40-55004r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55006r3">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[] 
+</span>
+<br class="fancyvrb">
+<a id="x40-55008r4">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Y 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55010r5">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55012r6">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a] 
+</span>
+<br class="fancyvrb">
+<a id="x40-55014r7">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Y 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[b,c,d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55016r8">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55018r9">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b] 
+</span>
+<br class="fancyvrb">
+<a id="x40-55020r10">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Y 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[c,d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55022r11">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55024r12">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c] 
+</span>
+<br class="fancyvrb">
+<a id="x40-55026r13">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Y 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55028r14">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55030r15">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,d] 
+</span>
+<br class="fancyvrb">
+<a id="x40-55032r16">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Y 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55034r17">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55036r18">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;no 
+</span>
+</div>
+</div>
+
+<div class="nb-cell query" name="fancyvrb286">
+append(X,Y,[a,b,c,d]). 
+ 
+X = [] 
+Y = [a,b,c,d] ; 
+ 
+X = [a] 
+Y = [b,c,d] ; 
+ 
+X = [a,b] 
+Y = [c,d] ; 
+ 
+X = [a,b,c] 
+Y = [d] ; 
+ 
+X = [a,b,c,d] 
+Y = [] ; 
+ 
+no
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> That is, we give the list we want to split up (here 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> ) to 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> as the third argument, and we use variables for the first two arguments. Prolog then searches for ways of instantiating the variables to two lists that concatenate to give the third argument, thus splitting up the list in two. Moreover, as this example shows, by backtracking, Prolog can find all possible ways of splitting up a list into two consecutive lists. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> This ability means it is easy to define some useful predicates with 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> . Let’s consider some examples. First, we can define a program which finds prefixes of lists. For example, the prefixes of 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> are 
+<span class="verb">
+<span class="cmtt-10"> [] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [a] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [a,b] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c] 
+</span>
+</span> , and 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> . With the help of 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> it is straightforward to define a program 
+<span class="verb">
+<span class="cmtt-10"> prefix/2 
+</span>
+</span> , whose arguments are both lists, such that 
+<span class="verb">
+<span class="cmtt-10"> prefix(P,L) 
+</span>
+</span> will hold when 
+<span class="verb">
+<span class="cmtt-10"> P 
+</span>
+</span> is a prefix of 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> . Here’s how: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb287">
+<a id="x40-55038r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;prefix(P,L):- 
+</span>
+<span class="cmtt-10"> &nbsp;append(P,_,L). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb287">
+prefix(P,L):- append(P,_,L).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> This says that list 
+<span class="verb">
+<span class="cmtt-10"> P 
+</span>
+</span> is a prefix of list 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> when there is some list such that 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> is the result of concatenating 
+<span class="verb">
+<span class="cmtt-10"> P 
+</span>
+</span> with that list. (We use the anonymous variable since we don’t care what that other list is: we only care that there is some such list or other.) This predicate successfully finds prefixes of lists, and moreover, via backtracking, finds them all: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb288">
+<a id="x40-55040r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;prefix(X,[a,b,c,d]). 
+</span>
+<br class="fancyvrb">
+<a id="x40-55042r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55044r3">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55046r4">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55048r5">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55050r6">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55052r7">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55054r8">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55056r9">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55058r10">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55060r11">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55062r12">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55064r13">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;no 
+</span>
+</div>
+</div>
+
+<div class="nb-cell query" name="fancyvrb288">
+prefix(X,[a,b,c,d]). 
+ 
+X = [] ; 
+ 
+X = [a] ; 
+ 
+X = [a,b] ; 
+ 
+X = [a,b,c] ; 
+ 
+X = [a,b,c,d] ; 
+ 
+no
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> In a similar fashion, we can define a program which finds suffixes of lists. For example, the suffixes of 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> are 
+<span class="verb">
+<span class="cmtt-10"> [] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [d] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [c,d] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [b,c,d] 
+</span>
+</span> , and 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> . Again, using 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> it is easy to define 
+<span class="verb">
+<span class="cmtt-10"> suffix/2 
+</span>
+</span> , a predicate whose arguments are both lists, such that 
+<span class="verb">
+<span class="cmtt-10"> suffix(S,L) 
+</span>
+</span> will hold when 
+<span class="verb">
+<span class="cmtt-10"> S 
+</span>
+</span> is a suffix of 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> : 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb289">
+<a id="x40-55066r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;suffix(S,L):- 
+</span>
+<span class="cmtt-10"> &nbsp;append(_,S,L). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb289">
+suffix(S,L):- append(_,S,L).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> That is, list 
+<span class="verb">
+<span class="cmtt-10"> S 
+</span>
+</span> is a suffix of list 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> if there is some list such that 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> is the result of concatenating that list with 
+<span class="verb">
+<span class="cmtt-10"> S 
+</span>
+</span> . This predicate successfully finds suffixes of lists, and moreover, via backtracking, finds them all: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb290">
+<a id="x40-55068r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;suffix(X,[a,b,c,d]). 
+</span>
+<br class="fancyvrb">
+<a id="x40-55070r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55072r3">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55074r4">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55076r5">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[b,c,d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55078r6">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55080r7">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[c,d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55082r8">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55084r9">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[d] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55086r10">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55088r11">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[] 
+</span>
+<span class="cmtt-10"> &nbsp;; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55090r12">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x40-55092r13">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;no 
+</span>
+</div>
+</div>
+
+<div class="nb-cell query" name="fancyvrb290">
+suffix(X,[a,b,c,d]). 
+ 
+X = [a,b,c,d] ; 
+ 
+X = [b,c,d] ; 
+ 
+X = [c,d] ; 
+ 
+X = [d] ; 
+ 
+X = [] ; 
+ 
+no
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Make sure you understand why the results come out in this order. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> And now it’s very easy to define a program that finds sublists of lists. The sublists of 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> are 
+<span class="verb">
+<span class="cmtt-10"> [] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [a] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [b] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [c] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [d] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [a,b] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [b,c] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [c,d] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c] 
+</span>
+</span> , 
+<span class="verb">
+<span class="cmtt-10"> [b,c,d] 
+</span>
+</span> , and 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> . A little thought reveals that the sublists of a list L are simply the 
+<span class="cmti-10"> prefixes of suffixes of 
+</span> L. Think about it pictorially: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="quote">
+<!--l. 335-->
+<p class="noindent"> Take suffix: 
+<span class="fbox">
+<span class="cmmi-10"> a,b,c,d,e,f,g, 
+</span>
+<img alt="h,i,j,k,l,m, n,o,p ◟------◝◜------◞" src="https://www.let.rug.nl/bos/lpn/html/lpn-html1x.png">
+</span>
+<br class="newline"> Take prefix: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<span class="fbox">
+<img alt="h,i,j,k,l ◟ ◝◜ ◞" src="https://www.let.rug.nl/bos/lpn/html/lpn-html2x.png">
+<span class="cmmi-10"> ,m,n,o,p 
+</span>
+</span>
+<br class="newline"> Result: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<span class="fbox">
+<span class="cmmi-10"> h,i,j,k,l 
+</span>
+</span>
+</p>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> As we already have defined the predicates for producing suffixes and prefixes of lists, we simply define a sublist as: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb291">
+<a id="x40-55094r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;sublist(SubL,L):- 
+</span>
+<span class="cmtt-10"> &nbsp;suffix(S,L), 
+</span>
+<span class="cmtt-10"> &nbsp;prefix(SubL,S). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb291">
+sublist(SubL,L):- suffix(S,L), prefix(SubL,S).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> That is, 
+<span class="verb">
+<span class="cmtt-10"> SubL 
+</span>
+</span> is a sublist of 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> if there is some suffix 
+<span class="verb">
+<span class="cmtt-10"> S 
+</span>
+</span> of 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> of which 
+<span class="verb">
+<span class="cmtt-10"> SubL 
+</span>
+</span> is a prefix. This program doesn’t 
+<span class="cmti-10"> explicitly 
+</span> use 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> , but of course, under the surface, that’s what’s doing the work for us, as both 
+<span class="verb">
+<span class="cmtt-10"> prefix/2 
+</span>
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> suffix/2 
+</span>
+</span> are defined using 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> . 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 6.2 
+</span>
+<a id="x41-560006.2">
+</a> Reversing a List 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> The 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> predicate is useful, and it is important to know how to put it to work. But it is just as important to know that it can be a source of inefficiency, and that you probably don’t want to use it all the time. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Why is 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> a source of inefficiency? If you think about the way it works, you’ll notice a weakness: 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> doesn’t join two lists in one simple action. Rather, it needs to work its way down its first argument until it finds the end of the list, and only then can it carry out the concatenation. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Now, often this causes no problems. For example, if we have two lists and we just want to concatenate them, it’s probably not too bad. Sure, Prolog will need to work down the length of the first list, but if the list is not too long, that’s probably not too high a price to pay for the ease of working with 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> . 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> But matters may be very different if the first two arguments are given as variables. As we’ve just seen, it can be very useful to give 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> variables in its first two arguments, for this lets Prolog search for ways of splitting up the lists. But there is a price to pay: a lot of searching is going on, and this can lead to very inefficient programs. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> To illustrate this, we shall examine the problem of reversing a list. That is, we will examine the problem of defining a predicate which takes a list (say 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> ) as input and returns a list containing the same elements in the reverse order (here 
+<span class="verb">
+<span class="cmtt-10"> [d,c,b,a] 
+</span>
+</span> ). 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Now, a reverse predicate is a useful predicate to have around. As you will have realised by now, lists in Prolog are far easier to access from the front than from the back. For example, to pull out the head of a list 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> , all we have to do is perform the unification 
+<span class="verb">
+<span class="cmtt-10"> [H|_] 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;L 
+</span>
+</span> ; this results in 
+<span class="verb">
+<span class="cmtt-10"> H 
+</span>
+</span> being instantiated to the head of 
+<span class="verb">
+<span class="cmtt-10"> L 
+</span>
+</span> . But pulling out the last element of an arbitrary list is harder: we can’t do it simply using unification. On the other hand, if we had a predicate which reversed lists, we could first reverse the input list, and then pull out the head of the reversed list, as this would give us the last element of the original list. So a reverse predicate could be a useful tool. However, as we may have to reverse large lists, we would like this tool to be efficient. So we need to think about the problem carefully. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> And that’s what we’re going to do now. We will define two reverse predicates: a naive one, defined with the help of 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> , and a more efficient (and indeed, more natural) one defined using accumulators. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent">
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h4 class="likesubsectionHead">
+<a id="x41-570006.2">
+</a> Naive reverse using append 
+</h4>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> Here’s a recursive definition of what is involved in reversing a list: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<ol class="enumerate1">
+<li class="enumerate" id="x41-57002x1"> If we reverse the empty list, we obtain the empty list. 
+</li>
+<li class="enumerate" id="x41-57004x2"> If we reverse the list 
+<span class="verb">
+<span class="cmtt-10"> [H|T] 
+</span>
+</span> , we end up with the list obtained by reversing 
+<span class="verb">
+<span class="cmtt-10"> T 
+</span>
+</span> and concatenating with 
+<span class="verb">
+<span class="cmtt-10"> [H] 
+</span>
+</span> . 
+</li>
+</ol>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> To see that the recursive clause is correct, consider the list 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> . If we reverse the tail of this list we obtain 
+<span class="verb">
+<span class="cmtt-10"> [d,c,b] 
+</span>
+</span> . Concatenating this with 
+<span class="verb">
+<span class="cmtt-10"> [a] 
+</span>
+</span> yields 
+<span class="verb">
+<span class="cmtt-10"> [d,c,b,a] 
+</span>
+</span> , which is the reverse of 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> . 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> With the help of 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> it is easy to turn this recursive definition into Prolog: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb292">
+<a id="x41-57006r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;naiverev([],[]). 
+</span>
+<br class="fancyvrb">
+<a id="x41-57008r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;naiverev([H|T],R):- 
+</span>
+<span class="cmtt-10"> &nbsp;naiverev(T,RevT), 
+</span>
+<span class="cmtt-10"> &nbsp;append(RevT,[H],R). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb292">
+naiverev([],[]). 
+naiverev([H|T],R):- naiverev(T,RevT), append(RevT,[H],R).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Now, this definition is correct, but it does an awful lot of work. It is 
+<span class="cmti-10"> very 
+</span> instructive to look at a trace of this program. This shows that the program is spending a lot of time carrying out appends. This shouldn’t be too surprising: after, all, we are calling 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> recursively. The result is very inefficient (if you run a trace, you will find that it takes about 90 steps to reverse an eight element list) and hard to understand (the predicate spends most of its time in the recursive calls to 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> , making it very hard to see what is going on). 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Not nice. But as we shall now see, there 
+<span class="cmti-10"> is 
+</span> a better way. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent">
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h4 class="likesubsectionHead">
+<a id="x41-580006.2">
+</a> Reverse using an accumulator 
+</h4>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> The better way is to use an accumulator. The underlying idea is simple and natural. Our accumulator will be a list, and when we start it will be empty. Suppose we want to reverse 
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,d] 
+</span>
+</span> . At the start, our accumulator will be 
+<span class="verb">
+<span class="cmtt-10"> [] 
+</span>
+</span> . So we simply take the head of the list we are trying to reverse and add it as the head of the accumulator. We then carry on processing the tail, thus we are faced with the task of reversing 
+<span class="verb">
+<span class="cmtt-10"> [b,c,d] 
+</span>
+</span> , and our accumulator is 
+<span class="verb">
+<span class="cmtt-10"> [a] 
+</span>
+</span> . Again we take the head of the list we are trying to reverse and add it as the head of the accumulator (thus our new accumulator is 
+<span class="verb">
+<span class="cmtt-10"> [b,a] 
+</span>
+</span> ) and carry on trying to reverse 
+<span class="verb">
+<span class="cmtt-10"> [c,d] 
+</span>
+</span> . Again we use the same idea, so we get a new accumulator 
+<span class="verb">
+<span class="cmtt-10"> [c,b,a] 
+</span>
+</span> , and try to reverse 
+<span class="verb">
+<span class="cmtt-10"> [d] 
+</span>
+</span> . Needless to say, the next step yields an accumulator 
+<span class="verb">
+<span class="cmtt-10"> [d,c,b,a] 
+</span>
+</span> and the new goal of trying to reverse 
+<span class="verb">
+<span class="cmtt-10"> [] 
+</span>
+</span> . This is where the process stops: 
+<span class="cmti-10"> and our accumulator contains the reversed list we want 
+</span> . To summarise: the idea is simply to work our way through the list we want to reverse, and push each element in turn onto the head of the accumulator, like this: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb293">
+<a id="x41-58002r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;List: 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,d] 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Accumulator: 
+</span>
+<span class="cmtt-10"> &nbsp;[] 
+</span>
+<br class="fancyvrb">
+<a id="x41-58004r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;List: 
+</span>
+<span class="cmtt-10"> &nbsp;[b,c,d] 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Accumulator: 
+</span>
+<span class="cmtt-10"> &nbsp;[a] 
+</span>
+<br class="fancyvrb">
+<a id="x41-58006r3">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;List: 
+</span>
+<span class="cmtt-10"> &nbsp;[c,d] 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Accumulator: 
+</span>
+<span class="cmtt-10"> &nbsp;[b,a] 
+</span>
+<br class="fancyvrb">
+<a id="x41-58008r4">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;List: 
+</span>
+<span class="cmtt-10"> &nbsp;[d] 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Accumulator: 
+</span>
+<span class="cmtt-10"> &nbsp;[c,b,a] 
+</span>
+<br class="fancyvrb">
+<a id="x41-58010r5">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;List: 
+</span>
+<span class="cmtt-10"> &nbsp;[] 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;Accumulator: 
+</span>
+<span class="cmtt-10"> &nbsp;[d,c,b,a] 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb293">
+List: [a,b,c,d]  Accumulator: [] 
+List: [b,c,d]    Accumulator: [a] 
+List: [c,d]      Accumulator: [b,a] 
+List: [d]        Accumulator: [c,b,a] 
+List: []         Accumulator: [d,c,b,a]
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> This will be efficient because we simply blast our way through the list once: we don’t have to waste time carrying out concatenation or other irrelevant work. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> It’s also easy to put this idea in Prolog. Here’s the accumulator code: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb294">
+<a id="x41-58012r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;accRev([H|T],A,R):- 
+</span>
+<span class="cmtt-10"> &nbsp;accRev(T,[H|A],R). 
+</span>
+<br class="fancyvrb">
+<a id="x41-58014r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;accRev([],A,A). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb294">
+accRev([H|T],A,R):- accRev(T,[H|A],R). 
+accRev([],A,A).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> This is classic accumulator code: it follows the same pattern as the arithmetic examples we examined in the previous chapter. The recursive clause is responsible for chopping off the head of the input list, and pushing it onto the accumulator. The base case halts the program, and copies the accumulator to the final argument. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> As is usual with accumulator code, it’s a good idea to write a predicate which carries out the required initialisation of the accumulator for us: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="fancyvrb" id="fancyvrb295">
+<a id="x41-58016r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;rev(L,R):- 
+</span>
+<span class="cmtt-10"> &nbsp;accRev(L,[],R). 
+</span>
+</div>
+</div>
+
+<div class="nb-cell program" name="fancyvrb295">
+rev(L,R):- accRev(L,[],R).
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Again, it is instructive to run some traces on this program and compare it with 
+<span class="verb">
+<span class="cmtt-10"> naiverev/2 
+</span>
+</span> . The accumulator based version is 
+<span class="cmti-10"> clearly 
+</span> better. For example, it takes about 20 steps to reverse an eight element list, as opposed to 90 for the naive version. Moreover, the trace is far easier to follow. The idea underlying the accumulator based version is simpler and more natural than the recursive calls to 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> . 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Summing up, 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> is a useful program, and you certainly should not be scared of using it. However, you also need to be aware that it is a source of inefficiency, so when you use it, ask yourself whether there is a better way. And often there is. The use of accumulators is often better, and (as the 
+<span class="verb">
+<span class="cmtt-10"> rev/2 
+</span>
+</span> example show) accumulators can be a natural way of handling list processing tasks. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 6.3 
+</span>
+<a id="x42-590006.3">
+</a> <strong>Exercise</strong>s 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 514-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;6.1 
+</span>
+</span>
+<a id="x42-590011">
+</a>
+<span class="cmti-10"> Let’s call a list 
+</span> doubled 
+<span class="cmti-10"> if it is made of two consecutive 
+</span>
+<span class="cmti-10"> blocks of elements that are exactly the same. For example, 
+</span>
+<span class="verb">
+<span class="cmtt-10"> [a,b,c,a,b,c] 
+</span>
+</span>
+<span class="cmti-10"> is doubled (it’s made up of 
+</span>
+<span class="verb">
+<span class="cmtt-10"> [a,b,c] 
+</span>
+</span>
+<span class="cmti-10"> followed by 
+</span>
+<span class="verb">
+<span class="cmtt-10"> [a,b,c] 
+</span>
+</span>
+<span class="cmti-10"> ) and so is 
+</span>
+<span class="verb">
+<span class="cmtt-10"> [foo,gubble,foo,gubble] 
+</span>
+</span>
+<span class="cmti-10"> . On the other hand, 
+</span>
+<span class="verb">
+<span class="cmtt-10"> [foo,gubble,foo] 
+</span>
+</span>
+<span class="cmti-10"> is not 
+</span>
+<span class="cmti-10"> doubled. Write a predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> doubled(List) 
+</span>
+</span>
+<span class="cmti-10"> which succeeds when 
+</span>
+<span class="verb">
+<span class="cmtt-10"> List 
+</span>
+</span>
+<span class="cmti-10"> is a 
+</span>
+<span class="cmti-10"> doubled list. 
+</span>
+</p>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 523-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;6.2 
+</span>
+</span>
+<a id="x42-590022">
+</a>
+<span class="cmti-10"> A palindrome is a word or phrase that spells the same forwards and 
+</span>
+<span class="cmti-10"> backwards. For example, ‘rotator’, ‘eve’, and ‘nurses run’ are all palindromes. Write 
+</span>
+<span class="cmti-10"> a predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> palindrome(List) 
+</span>
+</span>
+<span class="cmti-10"> , which checks whether 
+</span>
+<span class="verb">
+<span class="cmtt-10"> List 
+</span>
+</span>
+<span class="cmti-10"> is a palindrome. For 
+</span>
+<span class="cmti-10"> example, to the queries 
+</span>
+</p>
+<div class="fancyvrb" id="fancyvrb296">
+<a id="x42-59004r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;palindrome([r,o,t,a,t,o,r]). 
+</span>
+</div>
+<!--l. 530-->
+<p class="noindent">
+<span class="cmti-10"> and 
+</span>
+</p>
+<div class="fancyvrb" id="fancyvrb297">
+<a id="x42-59006r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;palindrome([n,u,r,s,e,s,r,u,n]). 
+</span>
+</div>
+<!--l. 534-->
+<p class="noindent">
+<span class="cmti-10"> Prolog should respond yes, but to the query 
+</span>
+</p>
+<div class="fancyvrb" id="fancyvrb298">
+<a id="x42-59008r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;?- 
+</span>
+<span class="cmtt-10"> &nbsp;palindrome([n,o,t,h,i,s]). 
+</span>
+</div>
+<!--l. 538-->
+<p class="noindent">
+<span class="cmti-10"> it should respond no. 
+</span>
+</p>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 542-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;6.3 
+</span>
+</span>
+<a id="x42-590093">
+</a>
+<span class="cmti-10"> Write a predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> toptail(InList,OutList) 
+</span>
+</span>
+<span class="cmti-10"> which says no if 
+</span>
+<span class="verb">
+<span class="cmtt-10"> InList 
+</span>
+</span>
+<span class="cmti-10"> is a list containing fewer than 2 elements, and which deletes the first and the 
+</span>
+<span class="cmti-10"> last elements of 
+</span>
+<span class="verb">
+<span class="cmtt-10"> InList 
+</span>
+</span>
+<span class="cmti-10"> and returns the result as 
+</span>
+<span class="verb">
+<span class="cmtt-10"> OutList 
+</span>
+</span>
+<span class="cmti-10"> , when 
+</span>
+<span class="verb">
+<span class="cmtt-10"> InList 
+</span>
+</span>
+<span class="cmti-10"> is a list 
+</span>
+<span class="cmti-10"> containing at least 2 elements. For example: 
+</span>
+</p>
+<div class="fancyvrb" id="fancyvrb299">
+<a id="x42-59011r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;toptail([a],T). 
+</span>
+<br class="fancyvrb">
+<a id="x42-59013r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;no 
+</span>
+<br class="fancyvrb">
+<a id="x42-59015r3">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x42-59017r4">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;toptail([a,b],T). 
+</span>
+<br class="fancyvrb">
+<a id="x42-59019r5">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;T=[] 
+</span>
+<br class="fancyvrb">
+<a id="x42-59021r6">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x42-59023r7">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;toptail([a,b,c],T). 
+</span>
+<br class="fancyvrb">
+<a id="x42-59025r8">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;T=[b] 
+</span>
+</div>
+<!--l. 559-->
+<p class="indent">
+<span class="cmti-10"> (Hint: here’s where 
+</span>
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span>
+<span class="cmti-10"> comes in useful.) 
+</span>
+</p>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 562-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;6.4 
+</span>
+</span>
+<a id="x42-590264">
+</a>
+<span class="cmti-10"> Write a predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> last(List,X) 
+</span>
+</span>
+<span class="cmti-10"> which is true only when 
+</span>
+<span class="verb">
+<span class="cmtt-10"> List 
+</span>
+</span>
+<span class="cmti-10"> is a 
+</span>
+<span class="cmti-10"> list that contains at least one element and 
+</span>
+<span class="verb">
+<span class="cmtt-10"> X 
+</span>
+</span>
+<span class="cmti-10"> is the last element of that list. Do this in 
+</span>
+<span class="cmti-10"> two different ways: 
+</span>
+</p>
+<ol class="enumerate1">
+<li class="enumerate" id="x42-59028x1">
+<span class="cmti-10"> Define 
+</span>
+<span class="verb">
+<span class="cmtt-10"> last/2 
+</span>
+</span>
+<span class="cmti-10"> using the predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> rev/2 
+</span>
+</span>
+<span class="cmti-10"> discussed in the text. 
+</span>
+</li>
+<li class="enumerate" id="x42-59030x2">
+<span class="cmti-10"> Define 
+</span>
+<span class="verb">
+<span class="cmtt-10"> last/2 
+</span>
+</span>
+<span class="cmti-10"> using recursion. 
+</span>
+</li>
+</ol>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 572-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;6.5 
+</span>
+</span>
+<a id="x42-590315">
+</a>
+<span class="cmti-10"> Write a predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> swapfl(List1,List2) 
+</span>
+</span>
+<span class="cmti-10"> which checks whether 
+</span>
+<span class="verb">
+<span class="cmtt-10"> List1 
+</span>
+</span>
+<span class="cmti-10"> is identical to 
+</span>
+<span class="verb">
+<span class="cmtt-10"> List2 
+</span>
+</span>
+<span class="cmti-10"> , except that the first and last elements are exchanged. 
+</span>
+<span class="cmti-10"> Here’s where 
+</span>
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span>
+<span class="cmti-10"> could come in useful again, but it is also possible to write 
+</span>
+<span class="cmti-10"> a recursive definition without appealing to 
+</span>
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span>
+<span class="cmti-10"> (or any other) predicates. 
+</span>
+</p>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<div class="newtheorem">
+<!--l. 584-->
+<p class="noindent">
+<span class="head">
+<span class="cmbx-10"> <strong>Exercise</strong>
+</span>
+<span class="cmbx-10"> &nbsp;6.6 
+</span>
+</span>
+<a id="x42-590326">
+</a>
+<span class="cmti-10"> Here is an exercise for those of you who like logic puzzles. 
+</span>
+</p>
+<!--l. 588-->
+<p class="indent">
+<span class="cmti-10"> There is a street with three neighbouring houses that all have a different colour, 
+</span>
+<span class="cmti-10"> namely red, blue, and green. People of different nationalities live in the different 
+</span>
+<span class="cmti-10"> houses and they all have a different pet. Here are some more facts about them: 
+</span>
+</p>
+<ul class="itemize1">
+<li class="itemize">
+<span class="cmti-10"> The Englishman lives in the red house. 
+</span>
+</li>
+<li class="itemize">
+<span class="cmti-10"> The jaguar is the pet of the Spanish family. 
+</span>
+</li>
+<li class="itemize">
+<span class="cmti-10"> The Japanese lives to the right of the snail keeper. 
+</span>
+</li>
+<li class="itemize">
+<span class="cmti-10"> The snail keeper lives to the left of the blue house. 
+</span>
+</li>
+</ul>
+<!--l. 598-->
+<p class="noindent">
+<span class="cmti-10"> Who keeps the zebra? Don’t work it out for yourself: define a predicate 
+</span>
+<span class="verb">
+<span class="cmtt-10"> zebra/1 
+</span>
+</span>
+<span class="cmti-10"> that tells 
+</span>
+<span class="cmti-10"> you the nationality of the owner of the zebra! 
+</span>
+</p>
+<!--l. 602-->
+<p class="indent">
+<span class="cmti-10"> (Hint: Think of a representation for the houses and the street. Code the four 
+</span>
+<span class="cmti-10"> constraints in Prolog. You may find 
+</span>
+<span class="verb">
+<span class="cmtt-10"> member/2 
+</span>
+</span>
+<span class="cmti-10"> and 
+</span>
+<span class="verb">
+<span class="cmtt-10"> sublist/2 
+</span>
+</span>
+<span class="cmti-10"> useful.) 
+</span>
+</p>
+</div>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<h3 class="sectionHead">
+<span class="titlemark"> 6.4 
+</span>
+<a id="x43-600006.4">
+</a> Practical Session 
+</h3>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="noindent"> The purpose of Practical Session 6 is to help you get more experience with list manipulation. We first suggest some traces for you to carry out, and then some programming exercises. 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> The following traces will help you get to grips with the predicates discussed in the text: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<ol class="enumerate1">
+<li class="enumerate" id="x43-60002x1"> Carry out traces of 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> with the first two arguments instantiated, and the third argument uninstantiated. For example, 
+<span class="verb">
+<span class="cmtt-10"> append([a,b,c],[[],[2,3],b],X) 
+</span>
+</span> Make sure the basic pattern is clear. 
+</li>
+<li class="enumerate" id="x43-60004x2"> Next, carry out traces on 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> as used to split up a list, that is, with the first two arguments given as variables, and the last argument instantiated. For example, 
+<span class="verb">
+<span class="cmtt-10"> append(L,R,[foo,wee,blup]). 
+</span>
+</span>
+</li>
+<li class="enumerate" id="x43-60006x3"> Carry out some traces on 
+<span class="verb">
+<span class="cmtt-10"> prefix/2 
+</span>
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> suffix/2 
+</span>
+</span> . Why does 
+<span class="verb">
+<span class="cmtt-10"> prefix/2 
+</span>
+</span> find shorter lists first, and 
+<span class="verb">
+<span class="cmtt-10"> suffix/2 
+</span>
+</span> longer lists first? 
+</li>
+<li class="enumerate" id="x43-60008x4"> Carry out some traces on 
+<span class="verb">
+<span class="cmtt-10"> sublist/2 
+</span>
+</span> . As we said in the text, via backtracking this predicate generates all possible sublists, but as you’ll see, it generates several sublists more than once. Do you understand why? 
+</li>
+<li class="enumerate" id="x43-60010x5"> Carry out traces on both 
+<span class="verb">
+<span class="cmtt-10"> naiverev/2 
+</span>
+</span> and 
+<span class="verb">
+<span class="cmtt-10"> rev/2 
+</span>
+</span> , and compare their behaviour. 
+</li>
+</ol>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Now for some programming work: 
+</p>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<ol class="enumerate1">
+<li class="enumerate" id="x43-60012x1"> It is possible to write a one line definition of the 
+<span class="verb">
+<span class="cmtt-10"> member 
+</span>
+</span> predicate by making use of 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> . Do so. How does this new version of 
+<span class="verb">
+<span class="cmtt-10"> member 
+</span>
+</span> compare in efficiency with the standard one? 
+</li>
+<li class="enumerate" id="x43-60014x2"> Write a predicate 
+<span class="verb">
+<span class="cmtt-10"> set(InList,OutList) 
+</span>
+</span> which takes as input an arbitrary list, and returns a list in which each element of the input list appears only once. For example, the query 
+<div class="fancyvrb" id="fancyvrb300">
+<a id="x43-60016r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x43-60018r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;set([2,2,foo,1,foo, 
+</span>
+<span class="cmtt-10"> &nbsp;[],[]],X). 
+</span>
+</div>
+<!--l. 660-->
+<p class="noindent"> should yield the result 
+</p>
+<div class="fancyvrb" id="fancyvrb301">
+<a id="x43-60020r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<br class="fancyvrb">
+<a id="x43-60022r2">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;X 
+</span>
+<span class="cmtt-10"> &nbsp;= 
+</span>
+<span class="cmtt-10"> &nbsp;[2,foo,1,[]]. 
+</span>
+</div>
+<!--l. 667-->
+<p class="noindent"> (Hint: use the 
+<span class="verb">
+<span class="cmtt-10"> member 
+</span>
+</span> predicate to test for repetitions of items you have already found.) 
+</p>
+</li>
+<li class="enumerate" id="x43-60024x3"> We ‘flatten’ a list by removing all the square brackets around any lists it contains as elements, and around any lists that its elements contain as elements, and so on, for all nested lists. For example, when we flatten the list 
+<div class="fancyvrb" id="fancyvrb302">
+<a id="x43-60026r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,[c,d],[[1,2]],foo] 
+</span>
+</div>
+<!--l. 678-->
+<p class="noindent"> we get the list 
+</p>
+<div class="fancyvrb" id="fancyvrb303">
+<a id="x43-60028r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,d,1,2,foo] 
+</span>
+</div>
+<!--l. 683-->
+<p class="noindent"> and when we flatten the list 
+</p>
+<div class="fancyvrb" id="fancyvrb304">
+<a id="x43-60030r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,[[[[[[[c,d]]]]]]],[[1,2]],foo,[]] 
+</span>
+</div>
+<!--l. 687-->
+<p class="noindent"> we also get 
+</p>
+<div class="fancyvrb" id="fancyvrb305">
+<a id="x43-60032r1">
+</a>
+<span class="cmtt-10"> &nbsp; 
+</span>
+<span class="cmtt-10"> &nbsp;[a,b,c,d,1,2,foo]. 
+</span>
+</div>
+<!--l. 691-->
+<p class="noindent"> Write a predicate 
+<span class="verb">
+<span class="cmtt-10"> flatten(List,Flat) 
+</span>
+</span> that holds when the first argument 
+<span class="verb">
+<span class="cmtt-10"> List 
+</span>
+</span> flattens to the second argument 
+<span class="verb">
+<span class="cmtt-10"> Flat 
+</span>
+</span> . This should be done without making use of 
+<span class="verb">
+<span class="cmtt-10"> append/3 
+</span>
+</span> . 
+</p>
+</li>
+</ol>
+</div>
+
+<div class="nb-cell html" name="htm1">
+<p class="indent"> Ok, we’re now halfway through the book. And flattening a list is the Pons Asinorum of Prolog programming. Did you cross it ok? If so, great. Time to move on. 
+</p>
+</div>
+
+</div>
